@@ -76,7 +76,7 @@ export default function LoginPage() {
           </h1>
           
           <p className="text-white/95 text-lg mb-10 max-w-md font-medium leading-relaxed">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec quis erat et quam iaculis faucibus at sit amet nibh. Vestibulum
+            Plataforma de gestión de Tags de viajes
           </p>
 
           <div className="flex gap-6 items-start">
