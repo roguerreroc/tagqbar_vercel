@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readCSV, appendCSV } from '@/lib/csv';
+import { supabaseAdmin } from '@/lib/supabase';
 import { verifyToken } from '@/lib/jwt';
 import { cookies } from 'next/headers';
 
@@ -23,53 +23,48 @@ export async function POST(req: Request) {
     const start = Number(startId);
     const end = Number(endId);
 
-    // Validar solapamiento
-    const existingTags = await readCSV<any>('etiquetas.csv');
-    const hasOverlap = existingTags.some(tag => {
-      const tagId = Number(tag.id);
-      return tagId >= start && tagId <= end;
-    });
+    // Validar solapamiento directo en base de datos
+    const { data: existingTags, error: searchError } = await supabaseAdmin
+      .from('etiquetas')
+      .select('id')
+      .gte('id', String(start))
+      .lte('id', String(end));
+      
+    if (searchError) throw new Error('Error al validar solapamiento');
 
-    if (hasOverlap) {
+    if (existingTags && existingTags.length > 0) {
       return NextResponse.json({ error: 'El rango especificado se solapa con etiquetas existentes' }, { status: 400 });
     }
 
     // Generar nuevas etiquetas
     const newTags = [];
-    const date = new Date().toISOString();
     
     for (let i = start; i <= end; i++) {
-        // En Next.js el entorno debe ser lo más rápido posible, por lo que empujamos al array en memoria
       newTags.push({
         id: String(i),
-        estado: 'inactiva',
-        fechaCreacion: date
+        estado: 'inactiva'
       });
     }
 
-    // Guardar en CSV de etiquetas
-    await appendCSV('etiquetas.csv', newTags, [
-      { id: 'id', title: 'id' },
-      { id: 'estado', title: 'estado' },
-      { id: 'fechaCreacion', title: 'fechaCreacion' }
-    ]);
+    // Guardar en tabla de etiquetas
+    const { error: insertError } = await supabaseAdmin
+      .from('etiquetas')
+      .insert(newTags);
+      
+    if (insertError) throw new Error('Error al insertar etiquetas en la base de datos');
 
     // Registrar en auditoría
-    const auditData = [{
-      id: Date.now().toString(),
-      usuarioId: decoded.id,
+    const auditData = {
+      id: crypto.randomUUID(),
+      fecha: new Date().toISOString(),
+      usuarioId: String(decoded.id),
       accion: 'GENERACION_ETIQUETAS',
-      detalle: `Rango generado: ${start} al ${end} (${newTags.length} etiquetas)`,
-      fecha: date
-    }];
+      detalles: `Rango generado: ${start} al ${end} (${newTags.length} etiquetas)`
+    };
 
-    await appendCSV('auditoria.csv', auditData, [
-      { id: 'id', title: 'id' },
-      { id: 'usuarioId', title: 'usuarioId' },
-      { id: 'accion', title: 'accion' },
-      { id: 'detalle', title: 'detalle' },
-      { id: 'fecha', title: 'fecha' }
-    ]);
+    await supabaseAdmin
+      .from('auditoria')
+      .insert([auditData]);
 
     return NextResponse.json({ success: true, count: newTags.length });
   } catch (error) {

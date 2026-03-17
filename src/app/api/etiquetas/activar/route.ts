@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readCSV, appendCSV, updateRecordInCSV } from '@/lib/csv';
+import { supabaseAdmin } from '@/lib/supabase';
 import { verifyToken } from '@/lib/jwt';
 import { cookies } from 'next/headers';
 
@@ -20,10 +20,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Faltan campos obligatorios' }, { status: 400 });
     }
 
-    const etiquetas = await readCSV<any>('etiquetas.csv');
-    const etiqueta = etiquetas.find(e => e.id === String(etiquetaId));
+    const { data: etiqueta, error: findError } = await supabaseAdmin
+      .from('etiquetas')
+      .select('*')
+      .eq('id', String(etiquetaId))
+      .single();
 
-    if (!etiqueta) {
+    if (findError || !etiqueta) {
       return NextResponse.json({ error: 'La etiqueta especificada no existe en el inventario' }, { status: 404 });
     }
 
@@ -31,56 +34,52 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'La etiqueta ya se encuentra activa para otro viaje' }, { status: 400 });
     }
 
-    // Actualizar estado de etiqueta
-    await updateRecordInCSV<any>('etiquetas.csv', String(etiquetaId), { estado: 'activa' }, [
-      { id: 'id', title: 'id' },
-      { id: 'estado', title: 'estado' },
-      { id: 'fechaCreacion', title: 'fechaCreacion' }
-    ]);
+    // Usar una transacción no es estrictamente necesario en este MVP si no hay alta concurrencia, 
+    // pero idealmente se haría RPC. Haremos las promesas de actualización en orden.
+
+    // 1. Actualizar estado de etiqueta
+    const { error: updateError } = await supabaseAdmin
+      .from('etiquetas')
+      .update({ estado: 'activa' })
+      .eq('id', String(etiquetaId));
+
+    if (updateError) throw new Error('Error al actualizar la etiqueta');
 
     const date = new Date().toISOString();
     
-    // Registrar la activación
-    await appendCSV('activaciones.csv', [{
-      id: Date.now().toString(),
+    // 2. Registrar la activación
+    const activacionData = {
+      id: crypto.randomUUID(),
       etiquetaId: String(etiquetaId),
       reserva,
       vueloOrigen,
       vueloDestino,
-      tipoEquipajeId,
+      tipoEquipajeId: String(tipoEquipajeId),
       fechaInicio,
-      fechaFin,
-      operadorId: decoded.id,
-      precioCobrado: precioCobrado || 0,
+      fechaFin: fechaFin || null,
+      operadorId: String(decoded.id),
+      precioCobrado: Number(precioCobrado || 0),
       fechaRegistro: date
-    }], [
-      { id: 'id', title: 'id' },
-      { id: 'etiquetaId', title: 'etiquetaId' },
-      { id: 'reserva', title: 'reserva' },
-      { id: 'vueloOrigen', title: 'vueloOrigen' },
-      { id: 'vueloDestino', title: 'vueloDestino' },
-      { id: 'tipoEquipajeId', title: 'tipoEquipajeId' },
-      { id: 'fechaInicio', title: 'fechaInicio' },
-      { id: 'fechaFin', title: 'fechaFin' },
-      { id: 'operadorId', title: 'operadorId' },
-      { id: 'precioCobrado', title: 'precioCobrado' },
-      { id: 'fechaRegistro', title: 'fechaRegistro' }
-    ]);
+    };
 
-    // Auditoria
-    await appendCSV('auditoria.csv', [{
-      id: Date.now().toString() + '1',
-      usuarioId: decoded.id,
+    const { error: insertActError } = await supabaseAdmin
+      .from('activaciones')
+      .insert([activacionData]);
+
+    if (insertActError) throw new Error('Error al registrar la activación');
+
+    // 3. Auditoria
+    const auditData = {
+      id: crypto.randomUUID(),
+      usuarioId: String(decoded.id),
       accion: 'ACTIVACION_ETIQUETA',
-      detalle: `Etiqueta ${etiquetaId} activada para reserva ${reserva}`,
+      detalles: `Etiqueta ${etiquetaId} activada para reserva ${reserva}`,
       fecha: date
-    }], [
-      { id: 'id', title: 'id' },
-      { id: 'usuarioId', title: 'usuarioId' },
-      { id: 'accion', title: 'accion' },
-      { id: 'detalle', title: 'detalle' },
-      { id: 'fecha', title: 'fecha' }
-    ]);
+    };
+
+    await supabaseAdmin
+      .from('auditoria')
+      .insert([auditData]);
 
     return NextResponse.json({ success: true, message: 'Etiqueta activada correctamente' });
 

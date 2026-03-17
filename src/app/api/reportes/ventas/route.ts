@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readCSV } from '@/lib/csv';
+import { supabaseAdmin } from '@/lib/supabase';
 import { verifyToken } from '@/lib/jwt';
 import { cookies } from 'next/headers';
 
@@ -18,28 +18,33 @@ export async function GET(req: Request) {
     const startObj = searchParams.get('start');
     const endObj = searchParams.get('end');
 
-    const activaciones = await readCSV<any>('activaciones.csv');
-    
-    let filtered = activaciones;
-    
-    if (startObj && endObj) {
-      const startDate = new Date(startObj);
-      const endDate = new Date(endObj);
-      endDate.setHours(23, 59, 59, 999);
 
-      filtered = activaciones.filter(a => {
-        const d = new Date(a.fechaRegistro);
-        return d >= startDate && d <= endDate;
-      });
+
+    let query = supabaseAdmin
+      .from('activaciones')
+      .select('*');
+
+    if (startObj && endObj) {
+      // Supabase supports querying by ISO 8601 Strings on dates/timestamps natively
+      // So we append the timestamp to include the entire end day
+      const startDate = new Date(startObj).toISOString();
+      const endDateDate = new Date(endObj);
+      endDateDate.setHours(23, 59, 59, 999);
+      const endDate = endDateDate.toISOString();
+
+      query = query.gte('fechaRegistro', startDate).lte('fechaRegistro', endDate);
     }
 
-    const totalVentas = filtered.reduce((sum, a) => sum + Number(a.precioCobrado || 0), 0);
+    const { data: activaciones, error } = await query;
+    if (error) throw new Error('Error al obtener ventas');
+
+    const totalVentas = (activaciones || []).reduce((sum: number, a: any) => sum + Number(a.precioCobrado || 0), 0);
     
     return NextResponse.json({ 
       success: true, 
       total: totalVentas, 
-      count: filtered.length, 
-      data: filtered 
+      count: (activaciones || []).length, 
+      data: activaciones || [] 
     });
   } catch (error) {
     return NextResponse.json({ error: 'Error interno' }, { status: 500 });

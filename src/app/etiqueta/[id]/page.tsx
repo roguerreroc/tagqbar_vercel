@@ -1,4 +1,4 @@
-import { readCSV } from '@/lib/csv';
+import { supabaseAdmin } from '@/lib/supabase';
 import { notFound } from 'next/navigation';
 
 interface PageProps {
@@ -9,21 +9,37 @@ export default async function PublicEtiquetaPage({ params }: PageProps) {
   // Await params per Next.js 15+ convention for dynamic routes
   const { id } = await params;
 
-  const etiquetas = await readCSV<any>('etiquetas.csv');
-  const etiqueta = etiquetas.find((e) => e.id === id);
+  // Consultar la etiqueta específica
+  const { data: etiqueta, error: tagError } = await supabaseAdmin
+    .from('etiquetas')
+    .select('*')
+    .eq('id', id)
+    .single();
 
-  if (!etiqueta) {
+  if (tagError || !etiqueta) {
     notFound();
   }
 
-  const activaciones = await readCSV<any>('activaciones.csv');
   // Buscar la activación activa más reciente para esta etiqueta
-  const tagActivations = activaciones.filter((a) => a.etiquetaId === id);
-  const currentActivacion = tagActivations[tagActivations.length - 1]; // Toma la última
+  const { data: tagActivations, error: actError } = await supabaseAdmin
+    .from('activaciones')
+    .select('*')
+    .eq('etiquetaId', id)
+    .order('fechaRegistro', { ascending: false })
+    .limit(1);
 
-  // Tipos
-  const tipos = await readCSV<any>('tipos_equipaje.csv');
-  const tipo = currentActivacion ? tipos.find((t) => t.id === currentActivacion.tipoEquipajeId) : null;
+  const currentActivacion = tagActivations && tagActivations.length > 0 ? tagActivations[0] : null;
+
+  // Consultar tipo de equipaje asociado solo si hay activación
+  let tipo = null;
+  if (currentActivacion) {
+    const { data: tipoData } = await supabaseAdmin
+      .from('tipos_equipaje')
+      .select('*')
+      .eq('id', currentActivacion.tipoEquipajeId)
+      .single();
+    tipo = tipoData;
+  }
 
   return (
     <div className="min-h-screen bg-[#F0F4F8] py-10 px-4 font-sans flex items-start lg:items-center justify-center">

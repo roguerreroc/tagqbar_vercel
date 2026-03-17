@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readCSV } from '@/lib/csv';
+import { supabaseAdmin } from '@/lib/supabase';
 import { verifyToken } from '@/lib/jwt';
 import { cookies } from 'next/headers';
 
@@ -14,12 +14,31 @@ export async function GET() {
       return NextResponse.json({ error: 'Permisos insuficientes' }, { status: 403 });
     }
 
-    const etiquetas = await readCSV<any>('etiquetas.csv');
+
     
+    // Obtenemos el conteo total
+    const { count: total, error: errTotal } = await supabaseAdmin
+      .from('etiquetas')
+      .select('*', { count: 'exact', head: true });
+
+    // Obtenemos el conteo de activas
+    const { count: activas, error: errActivas } = await supabaseAdmin
+      .from('etiquetas')
+      .select('*', { count: 'exact', head: true })
+      .eq('estado', 'activa');
+
+    // Obtenemos el conteo de inactivas
+    const { count: inactivas, error: errInactivas } = await supabaseAdmin
+      .from('etiquetas')
+      .select('*', { count: 'exact', head: true })
+      .eq('estado', 'inactiva');
+    
+    if (errTotal || errActivas || errInactivas) throw new Error('Error al consultar base de datos');
+
     const stats = {
-      total: etiquetas.length,
-      activas: etiquetas.filter(e => e.estado === 'activa').length,
-      inactivas: etiquetas.filter(e => e.estado === 'inactiva').length
+      total: total || 0,
+      activas: activas || 0,
+      inactivas: inactivas || 0
     };
 
     return NextResponse.json({ success: true, stats });

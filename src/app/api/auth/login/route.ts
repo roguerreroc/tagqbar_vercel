@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { signToken } from '@/lib/jwt';
-import { readCSV } from '@/lib/csv';
+import { supabaseAdmin } from '@/lib/supabase';
 
 export async function POST(req: Request) {
   try {
@@ -11,10 +11,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Email y contraseña son requeridos' }, { status: 400 });
     }
 
-    const users = await readCSV<any>('usuarios.csv');
-    const user = users.find((u) => u.email === email);
+    const { data: user, error: supabaseError } = await supabaseAdmin
+      .from('usuarios')
+      .select('*')
+      .eq('email', email)
+      .single();
 
-    if (!user) {
+    if (supabaseError || !user) {
       return NextResponse.json({ error: 'Credenciales inválidas' }, { status: 401 });
     }
 
