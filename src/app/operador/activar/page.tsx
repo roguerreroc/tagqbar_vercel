@@ -8,7 +8,7 @@ export default function ActivarEtiquetaPage() {
     reserva: '',
     vueloOrigen: '',
     vueloDestino: '',
-    tipoEquipajeId: '1',
+    tipoEquipajeId: '',
     fechaInicio: '',
     fechaFin: '',
     precioCobrado: ''
@@ -20,7 +20,10 @@ export default function ActivarEtiquetaPage() {
     fetch('/api/equipajes')
       .then(res => res.json())
       .then(data => {
-        if (data.success) setTipos(data.tipos);
+        if (data.success && data.tipos?.length > 0) {
+          setTipos(data.tipos);
+          setFormData(prev => ({ ...prev, tipoEquipajeId: data.tipos[0].id }));
+        }
       })
       .catch();
     
