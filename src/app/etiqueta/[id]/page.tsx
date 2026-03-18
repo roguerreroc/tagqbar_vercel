@@ -20,6 +20,16 @@ export default async function PublicEtiquetaPage({ params }: PageProps) {
     notFound();
   }
 
+  // Track view (fire-and-forget)
+  supabaseAdmin
+    .from('auditoria')
+    .insert([{
+      accion: 'VISUALIZACION_ETIQUETA',
+      detalles: `Visualización de etiqueta #${id}`,
+      fecha: new Date().toISOString()
+    }])
+    .then(() => {});
+
   // Buscar la activación activa más reciente para esta etiqueta
   const { data: tagActivations, error: actError } = await supabaseAdmin
     .from('activaciones')
