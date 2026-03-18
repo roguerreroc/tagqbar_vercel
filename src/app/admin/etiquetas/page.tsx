@@ -1,11 +1,37 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import QRCode from 'qrcode';
 
 interface Etiqueta {
   id: string;
   estado: string;
   fechacreacion: string;
+}
+
+function QRCell({ id }: { id: string }) {
+  const [qrUrl, setQrUrl] = useState<string>('');
+
+  useEffect(() => {
+    const host = typeof window !== 'undefined' ? window.location.origin : '';
+    QRCode.toDataURL(`${host}/etiqueta/${id}`, {
+      width: 120,
+      margin: 1,
+      color: { dark: '#1e293b', light: '#ffffff' }
+    }).then(setQrUrl).catch(() => {});
+  }, [id]);
+
+  if (!qrUrl) return <div className="w-14 h-14 bg-slate-100 rounded-xl animate-pulse"></div>;
+
+  return (
+    <a href={`/etiqueta/${id}`} target="_blank" rel="noopener noreferrer" title={`Ver etiqueta #${id}`}>
+      <img
+        src={qrUrl}
+        alt={`QR #${id}`}
+        className="w-14 h-14 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:scale-110 transition-all cursor-pointer"
+      />
+    </a>
+  );
 }
 
 export default function ListarEtiquetasPage() {
@@ -178,6 +204,7 @@ export default function ListarEtiquetasPage() {
               <table className="w-full">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-100">
+                    <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">QR</th>
                     <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">ID</th>
                     <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
                     <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Fecha Creación</th>
@@ -187,6 +214,9 @@ export default function ListarEtiquetasPage() {
                 <tbody className="divide-y divide-slate-50">
                   {filtered.map((etiqueta) => (
                     <tr key={etiqueta.id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-6 py-3">
+                        <QRCell id={etiqueta.id} />
+                      </td>
                       <td className="px-6 py-4">
                         <span className="font-mono font-bold text-slate-800 text-sm bg-slate-100 px-3 py-1 rounded-lg">
                           #{etiqueta.id}
