@@ -49,29 +49,27 @@ export async function POST(req: Request) {
     
     // 2. Registrar la activación
     const activacionData = {
-      id: crypto.randomUUID(),
-      etiquetaId: String(etiquetaId),
+      etiquetaid: String(etiquetaId),
       reserva,
-      vueloOrigen,
-      vueloDestino,
-      tipoEquipajeId: String(tipoEquipajeId),
-      fechaInicio,
-      fechaFin: fechaFin || null,
-      operadorId: String(decoded.id),
-      precioCobrado: Number(precioCobrado || 0),
-      fechaRegistro: date
+      vueloorigen: vueloOrigen,
+      vuelodestino: vueloDestino,
+      tipoequipajeid: String(tipoEquipajeId),
+      fechainicio: fechaInicio,
+      fechafin: fechaFin || null,
+      operadorid: String(decoded.id),
+      preciocobrado: Number(precioCobrado || 0),
+      fecharegistro: date
     };
 
     const { error: insertActError } = await supabaseAdmin
       .from('activaciones')
       .insert([activacionData]);
 
-    if (insertActError) throw new Error('Error al registrar la activación');
+    if (insertActError) throw new Error('Error al registrar la activación: ' + insertActError.message);
 
     // 3. Auditoria
     const auditData = {
-      id: crypto.randomUUID(),
-      usuarioId: String(decoded.id),
+      usuarioid: String(decoded.id),
       accion: 'ACTIVACION_ETIQUETA',
       detalles: `Etiqueta ${etiquetaId} activada para reserva ${reserva}`,
       fecha: date

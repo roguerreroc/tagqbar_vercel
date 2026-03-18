@@ -55,9 +55,8 @@ export async function POST(req: Request) {
 
     // Registrar en auditoría
     const auditData = {
-      id: crypto.randomUUID(),
       fecha: new Date().toISOString(),
-      usuarioId: String(decoded.id),
+      usuarioid: String(decoded.id),
       accion: 'GENERACION_ETIQUETAS',
       detalles: `Rango generado: ${start} al ${end} (${newTags.length} etiquetas)`
     };
