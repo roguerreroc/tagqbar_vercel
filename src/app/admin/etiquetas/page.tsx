@@ -7,27 +7,28 @@ interface Etiqueta {
   id: string;
   estado: string;
   fechacreacion: string;
+  token: string;
 }
 
-function QRCell({ id }: { id: string }) {
+function QRCell({ token }: { token: string }) {
   const [qrUrl, setQrUrl] = useState<string>('');
 
   useEffect(() => {
     const host = typeof window !== 'undefined' ? window.location.origin : '';
-    QRCode.toDataURL(`${host}/etiqueta/${id}`, {
+    QRCode.toDataURL(`${host}/t/${token}`, {
       width: 120,
       margin: 1,
       color: { dark: '#1e293b', light: '#ffffff' }
     }).then(setQrUrl).catch(() => {});
-  }, [id]);
+  }, [token]);
 
   if (!qrUrl) return <div className="w-14 h-14 bg-slate-100 rounded-xl animate-pulse"></div>;
 
   return (
-    <a href={`/etiqueta/${id}`} target="_blank" rel="noopener noreferrer" title={`Ver etiqueta #${id}`}>
+    <a href={`/t/${token}`} target="_blank" rel="noopener noreferrer" title="Ver etiqueta">
       <img
         src={qrUrl}
-        alt={`QR #${id}`}
+        alt="QR"
         className="w-14 h-14 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:scale-110 transition-all cursor-pointer"
       />
     </a>
@@ -215,7 +216,7 @@ export default function ListarEtiquetasPage() {
                   {filtered.map((etiqueta) => (
                     <tr key={etiqueta.id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-6 py-3">
-                        <QRCell id={etiqueta.id} />
+                        <QRCell token={etiqueta.token} />
                       </td>
                       <td className="px-6 py-4">
                         <span className="font-mono font-bold text-slate-800 text-sm bg-slate-100 px-3 py-1 rounded-lg">
@@ -242,12 +243,12 @@ export default function ListarEtiquetasPage() {
                       </td>
                       <td className="px-6 py-4">
                         <a 
-                          href={`/etiqueta/${etiqueta.id}`} 
+                          href={`/t/${etiqueta.token}`} 
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="text-[#4A7AE8] hover:text-[#3562C4] text-sm font-medium hover:underline flex items-center gap-1"
                         >
-                          /etiqueta/{etiqueta.id}
+                          Ver etiqueta
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                           </svg>

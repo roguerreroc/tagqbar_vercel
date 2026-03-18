@@ -7,7 +7,7 @@ import jsPDF from 'jspdf';
 export default function ImprimirEtiquetasPage() {
   const [etiquetas, setEtiquetas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedTokens, setSelectedTokens] = useState<string[]>([]);
   const [status, setStatus] = useState<{ type: 'idle' | 'loading' | 'success' | 'error', message: string }>({ type: 'idle', message: '' });
 
   useEffect(() => {
@@ -23,22 +23,22 @@ export default function ImprimirEtiquetasPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const toggleSelection = (id: string) => {
-    setSelectedIds(prev => 
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+  const toggleSelection = (token: string) => {
+    setSelectedTokens(prev => 
+      prev.includes(token) ? prev.filter(item => item !== token) : [...prev, token]
     );
   };
 
   const toggleAll = () => {
-    if (selectedIds.length === etiquetas.length) {
-      setSelectedIds([]);
+    if (selectedTokens.length === etiquetas.length) {
+      setSelectedTokens([]);
     } else {
-      setSelectedIds(etiquetas.map(e => e.id));
+      setSelectedTokens(etiquetas.map(e => e.token));
     }
   };
 
   const handleImprimir = async () => {
-    if (selectedIds.length === 0) return;
+    if (selectedTokens.length === 0) return;
     
     setStatus({ type: 'loading', message: 'Generando documento PDF, por favor espere...' });
     
@@ -50,13 +50,14 @@ export default function ImprimirEtiquetasPage() {
         format: [100, 150]
       });
 
-      for (let i = 0; i < selectedIds.length; i++) {
-        const id = selectedIds[i];
+      for (let i = 0; i < selectedTokens.length; i++) {
+        const token = selectedTokens[i];
+        const etiqueta = etiquetas.find(e => e.token === token);
+        const id = etiqueta?.id || '?';
         
-        // El contenido del QR será la URL pública de la etiqueta
-        // En producción se usaría la URL real del dominio
+        // El contenido del QR será la URL pública con token (no adivinable)
         const host = typeof window !== 'undefined' ? window.location.origin : 'https://aeroempaque.com';
-        const urlPública = `${host}/etiqueta/${id}`;
+        const urlPública = `${host}/t/${token}`;
         
         // Generar QR en DataURL
         const qrDataUrl = await QRCode.toDataURL(urlPública, {
@@ -138,17 +139,17 @@ export default function ImprimirEtiquetasPage() {
             onClick={toggleAll}
             className="flex-1 md:flex-none px-4 py-3 lg:py-2 bg-slate-100 text-slate-700 font-bold rounded-xl lg:rounded-lg border border-slate-200 hover:bg-slate-200 transition-colors text-sm lg:text-base"
           >
-            {selectedIds.length === etiquetas.length && etiquetas.length > 0 ? 'Deseleccionar' : 'Seleccionar Todos'}
+            {selectedTokens.length === etiquetas.length && etiquetas.length > 0 ? 'Deseleccionar' : 'Seleccionar Todos'}
           </button>
           <button
             onClick={handleImprimir}
-            disabled={selectedIds.length === 0 || status.type === 'loading'}
+            disabled={selectedTokens.length === 0 || status.type === 'loading'}
             className="flex-1 md:flex-none px-6 py-3 lg:py-2 bg-[#ED7044] text-white font-bold rounded-xl lg:rounded-lg hover:bg-[#D95F35] transition-all-smooth disabled:opacity-50 shadow-lg shadow-[#ED7044]/30 flex items-center justify-center gap-2 text-sm lg:text-base"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clipRule="evenodd" />
             </svg>
-            Imprimir ({selectedIds.length})
+            Imprimir ({selectedTokens.length})
           </button>
         </div>
       </div>
@@ -197,17 +198,17 @@ export default function ImprimirEtiquetasPage() {
               {etiquetas.map((t) => (
                 <div 
                   key={t.id}
-                  onClick={() => toggleSelection(t.id)}
+                  onClick={() => toggleSelection(t.token)}
                   className={`cursor-pointer rounded-2xl border-2 p-4 flex flex-col items-center justify-center transition-all-smooth hover:-translate-y-1 ${
-                    selectedIds.includes(t.id) 
+                    selectedTokens.includes(t.token) 
                       ? 'border-[#3CC879] bg-[#E8F8EE] shadow-[0_0_15px_rgba(60,200,121,0.2)]' 
                       : 'border-slate-100 bg-white hover:border-[#3CC879]/30 hover:bg-slate-50 shadow-sm'
                   }`}
                 >
                   <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center mb-3 transition-colors ${
-                    selectedIds.includes(t.id) ? 'bg-[#3CC879] border-[#3CC879] text-white' : 'border-slate-300 bg-white'
+                    selectedTokens.includes(t.token) ? 'bg-[#3CC879] border-[#3CC879] text-white' : 'border-slate-300 bg-white'
                   }`}>
-                    {selectedIds.includes(t.id) && (
+                    {selectedTokens.includes(t.token) && (
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 lg:h-5 lg:w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>

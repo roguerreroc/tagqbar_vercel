@@ -14,6 +14,7 @@ interface Activacion {
   preciocobrado: string;
   fecharegistro: string;
   tipo_nombre: string;
+  etiqueta_token: string;
 }
 
 interface TipoEquipaje {
@@ -234,7 +235,7 @@ export default function ActivacionesPage() {
                       </>
                     )}
                     <a
-                      href={`/etiqueta/${act.etiquetaid}`}
+                      href={`/t/${act.etiqueta_token}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-4 py-2 bg-[#E0ECFF] text-[#4A7AE8] font-semibold text-sm rounded-xl hover:bg-[#D0DFFF] transition-all flex items-center gap-2"

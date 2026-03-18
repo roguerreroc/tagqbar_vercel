@@ -25,11 +25,18 @@ export async function GET() {
       .from('tipos_equipaje')
       .select('id, nombre');
 
+    // Fetch etiquetas for tokens
+    const { data: etiquetas } = await supabaseAdmin
+      .from('etiquetas')
+      .select('id, token');
+
     const tiposMap = new Map((tipos || []).map(t => [t.id, t.nombre]));
+    const tokenMap = new Map((etiquetas || []).map(e => [e.id, e.token]));
 
     const enriched = (activaciones || []).map(a => ({
       ...a,
-      tipo_nombre: tiposMap.get(a.tipoequipajeid) || 'Desconocido'
+      tipo_nombre: tiposMap.get(a.tipoequipajeid) || 'Desconocido',
+      etiqueta_token: tokenMap.get(a.etiquetaid) || ''
     }));
 
     return NextResponse.json({ success: true, activaciones: enriched });
