@@ -49,11 +49,11 @@ export default function ReportesPage() {
   const exportarExcel = () => {
     const ws = XLSX.utils.json_to_sheet(ventas.data.map((v: any) => ({
       ID_Venta: v.id,
-      Etiqueta: v.etiquetaId,
+      Etiqueta: v.etiquetaid,
       Reserva: v.reserva,
-      Ruta: `${v.vueloOrigen}-${v.vueloDestino}`,
-      Fecha_Activacion: new Date(v.fechaRegistro).toLocaleDateString(),
-      Precio: v.precioCobrado
+      Ruta: `${v.vueloorigen}-${v.vuelodestino}`,
+      Fecha_Activacion: new Date(v.fecharegistro).toLocaleDateString(),
+      Precio: v.preciocobrado
     })));
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Ventas");
@@ -69,11 +69,11 @@ export default function ReportesPage() {
     doc.text(`Etiquetas Vendidas: ${ventas.count}`, 14, 38);
 
     const tableData = ventas.data.map((v: any) => [
-      v.etiquetaId,
-      v.vueloOrigen + ' - ' + v.vueloDestino,
+      v.etiquetaid,
+      v.vueloorigen + ' - ' + v.vuelodestino,
       v.reserva,
-      new Date(v.fechaRegistro).toLocaleDateString(),
-      `$${v.precioCobrado}`
+      new Date(v.fecharegistro).toLocaleDateString(),
+      `$${v.preciocobrado}`
     ]);
 
     (doc as any).autoTable({
@@ -179,15 +179,15 @@ export default function ReportesPage() {
               <tbody className="text-slate-700 text-sm">
                 {ventas.data.map((v: any, i: number) => (
                   <tr key={v.id || i} className="border-b border-slate-100 hover:bg-[#F8F9FA] transition-colors">
-                    <td className="px-6 py-4 font-mono font-bold text-slate-900">#{v.etiquetaId}</td>
+                    <td className="px-6 py-4 font-mono font-bold text-slate-900">#{v.etiquetaid}</td>
                     <td className="px-6 py-4 font-medium uppercase">{v.reserva}</td>
                     <td className="px-6 py-4 font-semibold tracking-wide text-slate-600">
-                      <span className="bg-slate-100 px-2 py-1 rounded-md">{v.vueloOrigen}</span> 
+                      <span className="bg-slate-100 px-2 py-1 rounded-md">{v.vueloorigen}</span> 
                       <span className="mx-2 text-slate-300">&rarr;</span> 
-                      <span className="bg-slate-100 px-2 py-1 rounded-md">{v.vueloDestino}</span>
+                      <span className="bg-slate-100 px-2 py-1 rounded-md">{v.vuelodestino}</span>
                     </td>
-                    <td className="px-6 py-4 text-slate-500">{new Date(v.fechaRegistro).toLocaleString()}</td>
-                    <td className="px-6 py-4 font-extrabold text-[#ED7044] bg-orange-50/30">${v.precioCobrado}</td>
+                    <td className="px-6 py-4 text-slate-500">{new Date(v.fecharegistro).toLocaleString()}</td>
+                    <td className="px-6 py-4 font-extrabold text-[#ED7044] bg-orange-50/30">${v.preciocobrado}</td>
                   </tr>
                 ))}
                 {ventas.data.length === 0 && (

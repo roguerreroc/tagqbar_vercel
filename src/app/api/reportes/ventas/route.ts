@@ -32,13 +32,13 @@ export async function GET(req: Request) {
       endDateDate.setHours(23, 59, 59, 999);
       const endDate = endDateDate.toISOString();
 
-      query = query.gte('fechaRegistro', startDate).lte('fechaRegistro', endDate);
+      query = query.gte('fecharegistro', startDate).lte('fecharegistro', endDate);
     }
 
     const { data: activaciones, error } = await query;
     if (error) throw new Error('Error al obtener ventas');
 
-    const totalVentas = (activaciones || []).reduce((sum: number, a: any) => sum + Number(a.precioCobrado || 0), 0);
+    const totalVentas = (activaciones || []).reduce((sum: number, a: any) => sum + Number(a.preciocobrado || 0), 0);
     
     return NextResponse.json({ 
       success: true, 
