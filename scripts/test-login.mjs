@@ -1,33 +1,39 @@
-// Test login via the local Next.js server (port 3000)
-const credentials = [
-  { email: 'admin@qbar.com', password: 'admin123', label: 'Admin' },
-  { email: 'operador@qbar.com', password: 'admin123', label: 'Operador' },
-  { email: 'supervisor@qbar.com', password: 'admin123', label: 'Supervisor' },
-];
-
-async function testLogin(email, password, label) {
-  try {
-    const res = await fetch('http://localhost:3000/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+// Test the etiquetas listing API
+async function test() {
+  // First login
+  const loginRes = await fetch('http://localhost:3000/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'admin@qbar.com', password: 'admin123' }),
+  });
+  
+  const cookies = loginRes.headers.getSetCookie();
+  const authCookie = cookies.find(c => c.startsWith('auth_token='));
+  
+  if (!authCookie) {
+    console.log('❌ Failed to get auth cookie');
+    return;
+  }
+  
+  console.log('✅ Login successful');
+  
+  // Now test etiquetas API
+  const res = await fetch('http://localhost:3000/api/etiquetas', {
+    headers: { 'Cookie': authCookie.split(';')[0] },
+  });
+  
+  const data = await res.json();
+  console.log(`\n[${res.status}] GET /api/etiquetas`);
+  console.log(`Total etiquetas: ${data.etiquetas?.length ?? 0}`);
+  
+  if (data.etiquetas?.length > 0) {
+    console.log('\nPrimeras 5 etiquetas:');
+    data.etiquetas.slice(0, 5).forEach(e => {
+      console.log(`  #${e.id} | ${e.estado} | ${e.fechacreacion || 'sin fecha'}`);
     });
-    const data = await res.json();
-    const status = res.status === 200 ? '✅' : '❌';
-    console.log(`${status} [${res.status}] ${label} (${email} / ${password})`);
-    if (data.user) {
-      console.log(`   -> Rol: ${data.user.rol}, Nombre: ${data.user.nombre}`);
-    } else {
-      console.log(`   -> ${data.error}`);
-    }
-  } catch (err) {
-    console.log(`❌ [ERROR] ${label} => ${err.message}`);
+  } else {
+    console.log('(No hay etiquetas generadas aún)');
   }
 }
 
-(async () => {
-  console.log('=== Testing Login API at http://localhost:3000 ===\n');
-  for (const { email, password, label } of credentials) {
-    await testLogin(email, password, label);
-  }
-})();
+test().catch(console.error);

@@ -11,6 +11,7 @@ export function Sidebar() {
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', roles: ['ADMIN', 'OPERADOR', 'SUPERVISOR'] },
     { name: 'Generar Etiquetas', path: '/admin/generar', roles: ['ADMIN'] },
+    { name: 'Inventario Etiquetas', path: '/admin/etiquetas', roles: ['ADMIN', 'SUPERVISOR'] },
     { name: 'Activar Etiqueta', path: '/operador/activar', roles: ['ADMIN', 'OPERADOR'] },
     { name: 'Impresión QR', path: '/operador/imprimir', roles: ['ADMIN', 'OPERADOR'] },
     { name: 'Reportes', path: '/supervisor/reportes', roles: ['ADMIN', 'SUPERVISOR'] },

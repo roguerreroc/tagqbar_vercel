@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readCSV } from '@/lib/csv';
+import { supabaseAdmin } from '@/lib/supabase';
 import { verifyToken } from '@/lib/jwt';
 import { cookies } from 'next/headers';
 
@@ -12,10 +12,16 @@ export async function GET() {
     const decoded = verifyToken(token);
     if (!decoded) return NextResponse.json({ error: 'Token inválido' }, { status: 401 });
 
-    const etiquetas = await readCSV<any>('etiquetas.csv');
-    // Para no saturar en el MVP en caso de miles, retornamos las más recientes o todas
-    return NextResponse.json({ success: true, etiquetas });
+    const { data: etiquetas, error } = await supabaseAdmin
+      .from('etiquetas')
+      .select('*')
+      .order('id', { ascending: true });
+
+    if (error) throw error;
+
+    return NextResponse.json({ success: true, etiquetas: etiquetas || [] });
   } catch (error) {
+    console.error('Error fetching etiquetas:', error);
     return NextResponse.json({ error: 'Error interno' }, { status: 500 });
   }
 }
