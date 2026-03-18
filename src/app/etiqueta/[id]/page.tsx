@@ -24,8 +24,8 @@ export default async function PublicEtiquetaPage({ params }: PageProps) {
   const { data: tagActivations, error: actError } = await supabaseAdmin
     .from('activaciones')
     .select('*')
-    .eq('etiquetaId', id)
-    .order('fechaRegistro', { ascending: false })
+    .eq('etiquetaid', id)
+    .order('fecharegistro', { ascending: false })
     .limit(1);
 
   const currentActivacion = tagActivations && tagActivations.length > 0 ? tagActivations[0] : null;
@@ -36,7 +36,7 @@ export default async function PublicEtiquetaPage({ params }: PageProps) {
     const { data: tipoData } = await supabaseAdmin
       .from('tipos_equipaje')
       .select('*')
-      .eq('id', currentActivacion.tipoEquipajeId)
+      .eq('id', currentActivacion.tipoequipajeid)
       .single();
     tipo = tipoData;
   }
@@ -63,7 +63,7 @@ export default async function PublicEtiquetaPage({ params }: PageProps) {
           <div className="p-8">
             <div className="flex justify-between items-center mb-8 border-b-2 border-dashed border-slate-200 pb-8">
               <div className="text-center">
-                <p className="text-4xl font-black text-slate-800 tracking-tighter">{currentActivacion.vueloOrigen}</p>
+                <p className="text-4xl font-black text-slate-800 tracking-tighter">{currentActivacion.vueloorigen}</p>
                 <p className="text-xs text-slate-400 font-bold uppercase mt-2 tracking-wider">Origen</p>
               </div>
               <div className="flex flex-col items-center justify-center text-[#3CC879]">
@@ -72,7 +72,7 @@ export default async function PublicEtiquetaPage({ params }: PageProps) {
                 </svg>
               </div>
               <div className="text-center">
-                <p className="text-4xl font-black text-slate-800 tracking-tighter">{currentActivacion.vueloDestino}</p>
+                <p className="text-4xl font-black text-slate-800 tracking-tighter">{currentActivacion.vuelodestino}</p>
                 <p className="text-xs text-slate-400 font-bold uppercase mt-2 tracking-wider">Destino</p>
               </div>
             </div>
@@ -90,7 +90,7 @@ export default async function PublicEtiquetaPage({ params }: PageProps) {
               </div>
               <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
                 <p className="text-[10px] text-slate-400 font-bold uppercase mb-1 tracking-wider">Fecha de Viaje</p>
-                <p className="text-sm font-bold text-slate-800">{new Date(currentActivacion.fechaInicio).toLocaleDateString()}</p>
+                <p className="text-sm font-bold text-slate-800">{new Date(currentActivacion.fechainicio).toLocaleDateString()}</p>
               </div>
               <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
                 <p className="text-[10px] text-slate-400 font-bold uppercase mb-1 tracking-wider">Etiqueta ID</p>
