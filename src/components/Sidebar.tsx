@@ -13,6 +13,7 @@ export function Sidebar() {
     { name: 'Generar Etiquetas', path: '/admin/generar', roles: ['ADMIN'] },
     { name: 'Inventario Etiquetas', path: '/admin/etiquetas', roles: ['ADMIN', 'SUPERVISOR'] },
     { name: 'Activar Etiqueta', path: '/operador/activar', roles: ['ADMIN', 'OPERADOR'] },
+    { name: 'Activaciones', path: '/operador/activaciones', roles: ['ADMIN', 'OPERADOR', 'SUPERVISOR'] },
     { name: 'Impresión QR', path: '/operador/imprimir', roles: ['ADMIN', 'OPERADOR'] },
     { name: 'Reportes', path: '/supervisor/reportes', roles: ['ADMIN', 'SUPERVISOR'] },
   ];
