@@ -10,7 +10,7 @@ interface FoundButtonProps {
 const DICTIONARY = {
   es: {
     title: '¡Encontré este equipaje!',
-    subtitle: 'Notificar al dueño ahora',
+    found_subtitle: 'Notificar al dueño ahora',
     loading: 'Enviando...',
     success_title: '¡Gracias!',
     success_msg: 'Dueño notificado por Email y WhatsApp.',
@@ -19,7 +19,7 @@ const DICTIONARY = {
   },
   en: {
     title: 'I found this luggage!',
-    subtitle: 'Notify the owner now',
+    found_subtitle: 'Notify the owner now',
     loading: 'Sending...',
     success_title: 'Thanks!',
     success_msg: 'Owner notified via Email and WhatsApp.',
