@@ -15,6 +15,8 @@ interface Activacion {
   fecharegistro: string;
   tipo_nombre: string;
   etiqueta_token: string;
+  telefono_contacto?: string;
+  correo_contacto?: string;
 }
 
 interface TipoEquipaje {
@@ -65,7 +67,9 @@ export default function ActivacionesPage() {
       tipoequipajeid: act.tipoequipajeid,
       fechainicio: act.fechainicio,
       fechafin: act.fechafin || '',
-      preciocobrado: act.preciocobrado
+      preciocobrado: act.preciocobrado,
+      telefono_contacto: act.telefono_contacto || '',
+      correo_contacto: act.correo_contacto || ''
     });
     setSuccessMsg('');
   };
@@ -366,6 +370,38 @@ export default function ActivacionesPage() {
                     <div>
                       <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Tag ID</label>
                       <p className="text-sm font-bold text-slate-800 font-mono bg-slate-50 px-3 py-2 rounded-xl">#{act.etiquetaid}</p>
+                    </div>
+
+                    {/* Teléfono Contacto */}
+                    <div className="md:col-span-2">
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Teléfono Contacto</label>
+                      {isEditing ? (
+                        <input
+                          type="tel"
+                          value={editForm.telefono_contacto || ''}
+                          onChange={(e) => handleEditChange('telefono_contacto', e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#ED7044] outline-none text-sm"
+                          placeholder="+57..."
+                        />
+                      ) : (
+                        <p className="text-sm font-bold text-slate-800 bg-slate-50 px-3 py-2 rounded-xl">{act.telefono_contacto || '—'}</p>
+                      )}
+                    </div>
+
+                    {/* Correo Contacto */}
+                    <div className="md:col-span-2">
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Correo Contacto</label>
+                      {isEditing ? (
+                        <input
+                          type="email"
+                          value={editForm.correo_contacto || ''}
+                          onChange={(e) => handleEditChange('correo_contacto', e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#ED7044] outline-none text-sm"
+                          placeholder="email@..."
+                        />
+                      ) : (
+                        <p className="text-sm font-bold text-slate-800 bg-slate-50 px-3 py-2 rounded-xl">{act.correo_contacto || '—'}</p>
+                      )}
                     </div>
                   </div>
                 </div>

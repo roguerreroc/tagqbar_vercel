@@ -57,7 +57,18 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: 'Permisos insuficientes' }, { status: 403 });
     }
 
-    const { id, reserva, vueloorigen, vuelodestino, tipoequipajeid, fechainicio, fechafin, preciocobrado } = await req.json();
+    const { 
+      id, 
+      reserva, 
+      vueloorigen, 
+      vuelodestino, 
+      tipoequipajeid, 
+      fechainicio, 
+      fechafin, 
+      preciocobrado,
+      telefono_contacto,
+      correo_contacto
+    } = await req.json();
 
     if (!id) return NextResponse.json({ error: 'ID de activación requerido' }, { status: 400 });
 
@@ -69,6 +80,8 @@ export async function PUT(req: Request) {
     if (fechainicio !== undefined) updateData.fechainicio = fechainicio;
     if (fechafin !== undefined) updateData.fechafin = fechafin;
     if (preciocobrado !== undefined) updateData.preciocobrado = Number(preciocobrado);
+    if (telefono_contacto !== undefined) updateData.telefono_contacto = telefono_contacto;
+    if (correo_contacto !== undefined) updateData.correo_contacto = correo_contacto;
 
     const { error: updateError } = await supabaseAdmin
       .from('activaciones')

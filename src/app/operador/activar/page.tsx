@@ -11,7 +11,9 @@ export default function ActivarEtiquetaPage() {
     tipoEquipajeId: '',
     fechaInicio: '',
     fechaFin: '',
-    precioCobrado: ''
+    precioCobrado: '',
+    telefono_contacto: '',
+    correo_contacto: ''
   });
   const [tipos, setTipos] = useState<any[]>([]);
   const [status, setStatus] = useState<{ type: 'idle' | 'loading' | 'success' | 'error', message: string }>({ type: 'idle', message: '' });
@@ -62,7 +64,13 @@ export default function ActivarEtiquetaPage() {
 
       setStatus({ type: 'success', message: `¡Éxito! Etiqueta ${formData.etiquetaId} activada correctamente.` });
       // Limpiar algunos campos manteniendo vuelo/fechas por comodidad
-      setFormData(prev => ({ ...prev, etiquetaId: '', reserva: '' }));
+      setFormData(prev => ({ 
+        ...prev, 
+        etiquetaId: '', 
+        reserva: '',
+        telefono_contacto: '',
+        correo_contacto: ''
+      }));
     } catch (err: any) {
       setStatus({ type: 'error', message: err.message });
     }
@@ -195,6 +203,32 @@ export default function ActivarEtiquetaPage() {
                 className="w-full px-5 py-3 bg-orange-50/30 border border-orange-200 rounded-2xl focus:ring-2 focus:ring-[#ED7044] outline-none text-xl font-bold text-[#ED7044] transition-all-smooth"
                 placeholder="0"
                 value={formData.precioCobrado}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="md:col-span-1">
+              <label className="block text-xs font-bold text-[#3CC879] uppercase tracking-widest mb-2 ml-2">Teléfono de Contacto (con prefijo)</label>
+              <input
+                type="tel"
+                name="telefono_contacto"
+                required
+                className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-[#3CC879] outline-none transition-all-smooth"
+                placeholder="Ej. +57 300 1234567"
+                value={formData.telefono_contacto}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="md:col-span-1">
+              <label className="block text-xs font-bold text-[#3CC879] uppercase tracking-widest mb-2 ml-2">Correo de Contacto</label>
+              <input
+                type="email"
+                name="correo_contacto"
+                required
+                className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-[#3CC879] outline-none transition-all-smooth"
+                placeholder="Ej. pasajero@correo.com"
+                value={formData.correo_contacto}
                 onChange={handleChange}
               />
             </div>

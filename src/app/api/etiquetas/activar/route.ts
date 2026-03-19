@@ -14,10 +14,32 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Permisos insuficientes' }, { status: 403 });
     }
 
-    const { etiquetaId, reserva, vueloOrigen, vueloDestino, tipoEquipajeId, fechaInicio, fechaFin, precioCobrado } = await req.json();
+    const { 
+      etiquetaId, 
+      reserva, 
+      vueloOrigen, 
+      vueloDestino, 
+      tipoEquipajeId, 
+      fechaInicio, 
+      fechaFin, 
+      precioCobrado,
+      telefono_contacto,
+      correo_contacto
+    } = await req.json();
 
-    if (!etiquetaId || !reserva || !vueloOrigen || !vueloDestino || !tipoEquipajeId || !fechaInicio || !fechaFin) {
-      return NextResponse.json({ error: 'Faltan campos obligatorios' }, { status: 400 });
+    if (!etiquetaId || !reserva || !vueloOrigen || !vueloDestino || !tipoEquipajeId || !fechaInicio || !fechaFin || !telefono_contacto || !correo_contacto) {
+      return NextResponse.json({ error: 'Faltan campos obligatorios (incluyendo contacto)' }, { status: 400 });
+    }
+
+    // Validación básica de teléfono (debe tener prefijo + número, ej: +57 300...)
+    const phoneRegex = /^\+\d+/;
+    if (!phoneRegex.test(telefono_contacto)) {
+      return NextResponse.json({ error: 'El teléfono debe incluir el prefijo del país (ej: +57...)' }, { status: 400 });
+    }
+
+    // Validación mínima de correo (debe tener @)
+    if (!correo_contacto.includes('@')) {
+      return NextResponse.json({ error: 'El correo electrónico debe ser válido (incluir @)' }, { status: 400 });
     }
 
     const { data: etiqueta, error: findError } = await supabaseAdmin
@@ -58,7 +80,9 @@ export async function POST(req: Request) {
       fechafin: fechaFin || null,
       operadorid: String(decoded.id),
       preciocobrado: Number(precioCobrado || 0),
-      fecharegistro: date
+      fecharegistro: date,
+      telefono_contacto,
+      correo_contacto
     };
 
     const { error: insertActError } = await supabaseAdmin

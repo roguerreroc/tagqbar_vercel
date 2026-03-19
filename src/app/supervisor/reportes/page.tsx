@@ -53,7 +53,9 @@ export default function ReportesPage() {
       Reserva: v.reserva,
       Ruta: `${v.vueloorigen}-${v.vuelodestino}`,
       Fecha_Activacion: new Date(v.fecharegistro).toLocaleDateString(),
-      Precio: v.preciocobrado
+      Precio: v.preciocobrado,
+      Telefono_Contacto: v.telefono_contacto || '',
+      Correo_Contacto: v.correo_contacto || ''
     })));
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Ventas");
@@ -73,12 +75,14 @@ export default function ReportesPage() {
       v.vueloorigen + ' - ' + v.vuelodestino,
       v.reserva,
       new Date(v.fecharegistro).toLocaleDateString(),
-      `$${v.preciocobrado}`
+      `$${v.preciocobrado}`,
+      v.telefono_contacto || '—',
+      v.correo_contacto || '—'
     ]);
 
     (doc as any).autoTable({
       startY: 45,
-      head: [['ID Etiqueta', 'Ruta', 'Reserva', 'Fecha', 'Precio']],
+      head: [['ID Etiqueta', 'Ruta', 'Reserva', 'Fecha', 'Precio', 'Teléfono', 'Correo']],
       body: tableData,
     });
 
@@ -172,6 +176,7 @@ export default function ReportesPage() {
                   <th className="px-6 py-4 font-bold text-[#3CC879]">ID</th>
                   <th className="px-6 py-4 font-bold">Reserva</th>
                   <th className="px-6 py-4 font-bold">Ruta</th>
+                  <th className="px-6 py-4 font-bold">Contacto</th>
                   <th className="px-6 py-4 font-bold">Fecha Activación</th>
                   <th className="px-6 py-4 font-bold text-[#ED7044]">Recaudo</th>
                 </tr>
@@ -185,6 +190,12 @@ export default function ReportesPage() {
                       <span className="bg-slate-100 px-2 py-1 rounded-md">{v.vueloorigen}</span> 
                       <span className="mx-2 text-slate-300">&rarr;</span> 
                       <span className="bg-slate-100 px-2 py-1 rounded-md">{v.vuelodestino}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col text-[10px] lg:text-xs">
+                        <span className="font-semibold text-slate-700">{v.telefono_contacto || '—'}</span>
+                        <span className="text-slate-400 italic">{v.correo_contacto || '—'}</span>
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-slate-500">{new Date(v.fecharegistro).toLocaleString()}</td>
                     <td className="px-6 py-4 font-extrabold text-[#ED7044] bg-orange-50/30">${v.preciocobrado}</td>
