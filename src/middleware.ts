@@ -11,6 +11,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/api/auth') || 
     pathname.startsWith('/etiqueta') || 
     pathname.startsWith('/t/') || 
+    pathname.startsWith('/images/') || 
     pathname.startsWith('/api/activaciones/alertar');
   
   // Si no está autenticado y trata de acceder a rutas protegidas
@@ -30,5 +31,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|images/).*)'],
 };
