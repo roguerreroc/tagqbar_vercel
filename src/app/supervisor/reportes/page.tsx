@@ -59,13 +59,13 @@ export default function ReportesPage() {
     })));
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Ventas");
-    XLSX.writeFile(wb, `Reporte_Aeroempaque_${Date.now()}.xlsx`);
+    XLSX.writeFile(wb, `Reporte_Aeroempaques_${Date.now()}.xlsx`);
   };
 
   const exportarPDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(18);
-    doc.text("Reporte de Ventas - AeroEmpaque", 14, 22);
+    doc.text("Reporte de Ventas - AeroEmpaques", 14, 22);
     doc.setFontSize(12);
     doc.text(`Total Generado: $${ventas.total}`, 14, 30);
     doc.text(`Etiquetas Vendidas: ${ventas.count}`, 14, 38);
@@ -86,7 +86,7 @@ export default function ReportesPage() {
       body: tableData,
     });
 
-    doc.save(`Reporte_Aeroempaque_${Date.now()}.pdf`);
+    doc.save(`Reporte_Aeroempaques_${Date.now()}.pdf`);
   };
 
   return (

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'AeroEmpaque QR - Gestión de Equipaje',
+  title: 'AeroEmpaques QR - Gestión de Equipaje',
   description: 'Sistema administrativo MVP para etiquetas de equipaje',
 };
 

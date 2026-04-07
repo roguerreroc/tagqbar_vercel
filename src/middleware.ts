@@ -6,7 +6,12 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Archivos estáticos o de Next.js se ignoran en el matcher, pero validamos extras
-  const isPublicRoute = pathname.startsWith('/login') || pathname.startsWith('/api/auth') || pathname.startsWith('/etiqueta');
+  const isPublicRoute = 
+    pathname.startsWith('/login') || 
+    pathname.startsWith('/api/auth') || 
+    pathname.startsWith('/etiqueta') || 
+    pathname.startsWith('/t/') || 
+    pathname.startsWith('/api/activaciones/alertar');
   
   // Si no está autenticado y trata de acceder a rutas protegidas
   if (!token && !isPublicRoute) {

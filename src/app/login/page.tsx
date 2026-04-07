@@ -60,14 +60,18 @@ export default function LoginPage() {
         <div className="w-full lg:w-1/2 text-white flex flex-col pt-10">
           
           {/* Logo */}
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-14 h-14 rounded-full border-[3px] border-white flex flex-col items-center justify-center relative">
-               <div className="w-6 h-6 rounded-full border-2 border-white"></div>
-               <div className="absolute w-2 h-2 bg-[#3DC879] rounded-full bottom-2 right-2 border-2 border-white"></div>
+          <div className="flex items-center gap-4 mb-10">
+            <div className="relative">
+              <div className="absolute inset-0 bg-white rounded-full opacity-20 blur-lg animate-pulse"></div>
+              <img 
+                src="/images/logo.png" 
+                alt="Aeroempaques Logo" 
+                className="w-20 h-20 relative z-10 drop-shadow-2xl"
+              />
             </div>
-            <div className="leading-tight">
-              <span className="text-2xl font-semibold tracking-wide block">AeroEmpaque</span>
-              <span className="text-xl font-normal block">Partners</span>
+            <div className="leading-none">
+              <span className="text-4xl font-black tracking-tighter block text-white drop-shadow-md">AeroEmpaques</span>
+              <span className="text-sm font-bold tracking-[0.2em] uppercase text-[#FCE14B] block mt-1 ml-1 opacity-90">Travel Connect</span>
             </div>
           </div>
 
@@ -96,7 +100,7 @@ export default function LoginPage() {
                     type="email"
                     required
                     className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-[#3CC879] outline-none text-slate-800 font-medium transition-all"
-                    placeholder="admin@aeroempaque.com"
+                    placeholder="admin@aeroempaques.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />

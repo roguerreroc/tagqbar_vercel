@@ -21,15 +21,17 @@ export function Sidebar() {
   return (
     <aside className="w-full lg:w-64 bg-[#1B243B] text-white lg:min-h-screen flex flex-col shadow-2xl z-20 shrink-0">
       <div className="p-6 border-b border-white/5 flex justify-between items-center lg:block">
-        <div>
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full border-2 border-[#3CC879] flex items-center justify-center relative">
-               <div className="w-3 h-3 rounded-full border border-white"></div>
-            </div>
-            AeroEmpaque
-          </h2>
-          <p className="text-xs text-[#3CC879] mt-1 uppercase tracking-wider font-bold">{user?.rol}</p>
-        </div>
+        <Link href="/dashboard" className="flex items-center gap-3 group">
+          <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/10 group-hover:border-[#3CC879]/50 transition-all duration-300">
+             <img src="/images/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+          </div>
+          <div>
+            <h2 className="text-xl font-black tracking-tighter text-white group-hover:text-[#3CC879] transition-colors">
+              AeroEmpaques
+            </h2>
+            <p className="text-[10px] text-[#3CC879] uppercase tracking-widest font-bold opacity-80">{user?.rol || 'Personal'}</p>
+          </div>
+        </Link>
       </div>
 
       <div className="flex-1 p-4 flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible items-center lg:items-stretch">

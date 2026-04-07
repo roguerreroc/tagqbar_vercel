@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     // Simular envío de alertas
     console.log(`[ALERT] Bag found for activation ${activacionId}`);
     if (hasEmail) {
-      console.log(`[EMAIL] Sending to ${act.correo_contacto}: "Su equipaje se encontró gracias a QbarAeroempaque"`);
+      console.log(`[EMAIL] Sending to ${act.correo_contacto}: "Su equipaje se encontró gracias a QbarAeroempaques"`);
     }
     if (hasPhone) {
       console.log(`[WHATSAPP] Sending to ${act.telefono_contacto}: "Aviso de equipaje encontrado"`);

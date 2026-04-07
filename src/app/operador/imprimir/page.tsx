@@ -56,7 +56,7 @@ export default function ImprimirEtiquetasPage() {
         const id = etiqueta?.id || '?';
         
         // El contenido del QR será la URL pública con token (no adivinable)
-        const host = typeof window !== 'undefined' ? window.location.origin : 'https://aeroempaque.com';
+        const host = typeof window !== 'undefined' ? window.location.origin : 'https://aeroempaques.com';
         const urlPública = `${host}/t/${token}`;
         
         // Generar QR en DataURL
@@ -84,7 +84,7 @@ export default function ImprimirEtiquetasPage() {
         pdf.setTextColor(255, 255, 255);
         pdf.setFontSize(16);
         pdf.setFont("helvetica", "bold");
-        pdf.text("AEROEMPAQUE QR", 50, 15, { align: "center" });
+        pdf.text("AEROEMPAQUES QR", 50, 15, { align: "center" });
         
         // Código QR en el centro
         pdf.addImage(qrDataUrl, 'PNG', 15, 35, 70, 70);

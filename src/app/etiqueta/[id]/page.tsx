@@ -58,13 +58,22 @@ export default async function PublicEtiquetaPage({ params }: PageProps) {
         <div className="bg-gradient-to-br from-[#1B243B] to-[#2A3757] p-8 text-white relative flex justify-between items-center overflow-hidden">
           <div className="absolute right-0 top-0 w-40 h-40 bg-[#3CC879] opacity-20 rounded-full filter blur-2xl transform translate-x-1/2 -translate-y-1/2"></div>
           <div className="absolute left-0 bottom-0 w-32 h-32 bg-[#ED7044] opacity-10 rounded-full filter blur-xl transform -translate-x-1/2 translate-y-1/2"></div>
-          <div className="relative z-10">
-            <h1 className="text-2xl font-black tracking-tighter">AEROEMPAQUE</h1>
-            <p className="text-[#3CC879] text-xs font-bold tracking-widest uppercase mt-1">Status Equipaje</p>
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="bg-white/10 backdrop-blur-md p-1.5 rounded-xl border border-white/20">
+              <img 
+                src="/images/logo.png" 
+                alt="Logo" 
+                className="w-10 h-10 object-contain"
+              />
+            </div>
+            <div>
+              <h1 className="text-2xl font-black tracking-tighter">AEROEMPAQUES</h1>
+              <p className="text-[#3CC879] text-xs font-bold tracking-widest uppercase mt-0.5">Status Equipaje</p>
+            </div>
           </div>
-          <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center relative z-10 border border-white/10">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#3CC879]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          <div className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center relative z-10 border border-white/10">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#3CC879]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
             </svg>
           </div>
         </div>
@@ -134,7 +143,7 @@ export default async function PublicEtiquetaPage({ params }: PageProps) {
         
         {/* Footer */}
         <div className="bg-[#1B243B] px-8 py-5 flex justify-between items-center text-slate-400 text-[10px] font-bold tracking-widest uppercase">
-           <span>Aeroempaque QR Sys</span>
+           <span>Aeroempaques QR Sys</span>
            <span className="font-mono text-[#3CC879] flex items-center gap-2">
              <span className="w-2 h-2 rounded-full bg-[#3CC879] animate-pulse"></span>
              SYS-OK
